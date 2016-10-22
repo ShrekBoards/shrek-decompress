@@ -257,8 +257,8 @@ void decompress(unsigned char *decompressed, unsigned char *compressed)
 				{
 					/* 40FF79 */
 					loc_40FF79:
-					ebx = (unsigned int)*(compressed + 1);
-					edx = (unsigned int)*(compressed);
+					ebx = ((unsigned int)*(compressed + 1) & 0xFF);
+					edx = ((unsigned int)*(compressed) & 0xFF);
 					/* mov byte ptr [compressed], bl */
 					ebx = (unsigned int)*(compressed + 2);
 					local1 = ebx;
@@ -271,13 +271,49 @@ void decompress(unsigned char *decompressed, unsigned char *compressed)
 						ebp = edi;
 						ebp = !ebp;
 						esi = (esi + (ebp * 4));
-						/* some loop */
+						while (edi != 0)
 						{
+							*decompressed = edx;
+							/* mov dl, byte ptr [esp+18h+arg_4] */
+							*(decompressed + 1) = edx;
+							/* mov dl, byte ptr [esp+18h+arg_5] */
+							compressed += 4;
+							*(decompressed + 2) = edx;
+							*(decompressed + 3) = edx;
+							ebx = (*(compressed + 1) & 0xFF);
+							edx = (*compressed & 0xFF);
+							/* mov byte ptr [esp+18h+arg_4], bl */
+							ebx = (*(compressed + 2) & 0xFF);
+							decompressed += 4;
+							edi--;
+							/* mov [esp+18h+var_5], bl */
+							ebx = (*(compressed + 3) & 0xFF);
 						}
+						goto loc_40FFCF;
 					}
 					else
 					{
 						/* 40FFCF */
+						loc_40FFCF:
+						if ((signed int)esi <= 0)
+						{
+							goto loc_40FFF0;
+						}
+						else
+						{
+							/* 40FFD3 */
+							compressed += esi;
+							*decompressed = edx;
+							decompressed++;
+							if (esi > 1)
+							{
+								/* 40FFDD */
+							}
+							else
+							{
+								goto loc_40FFF0;
+							}
+						}
 					}
 				}
 				else
