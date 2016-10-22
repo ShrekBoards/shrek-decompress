@@ -207,14 +207,15 @@
 	0x53, 0x48, 0x41, 0x42, 0x53, 0x48, 0x41, 0x42
 };*/
 
-void decompress(unsigned char *decompressed, unsigned char *compressed)
+unsigned int decompress(unsigned char *decompressed, unsigned char *compressed)
 {
 	unsigned int ebx, esi, edx, edi, ebp;
 	unsigned int local0, local1;
 
-	/* some loop */
+	while(1)
 	{
 		/* 40FF50 */
+		loc_40FF50:
 		edx = (unsigned int)*compressed;
 		esi = edx & 7;
 		compressed++;
@@ -269,24 +270,24 @@ void decompress(unsigned char *decompressed, unsigned char *compressed)
 						edi = esi;
 						edi >>= 2;
 						ebp = edi;
-						ebp = !ebp;
+						ebp = ~ebp;
 						esi = (esi + (ebp * 4));
 						while (edi != 0)
 						{
 							*decompressed = edx;
-							/* mov dl, byte ptr [esp+18h+arg_4] */
+							edx = ((unsigned int)compressed) & 0xFF;
 							*(decompressed + 1) = edx;
-							/* mov dl, byte ptr [esp+18h+arg_5] */
+							edx = (local1 & 0xFF);
 							compressed += 4;
 							*(decompressed + 2) = edx;
 							*(decompressed + 3) = edx;
 							ebx = (*(compressed + 1) & 0xFF);
 							edx = (*compressed & 0xFF);
-							/* mov byte ptr [esp+18h+arg_4], bl */
+							compressed = (unsigned char*)(((unsigned int)compressed & 0xFFFFFF00) | (ebx & 0xFF));
 							ebx = (*(compressed + 2) & 0xFF);
 							decompressed += 4;
 							edi--;
-							/* mov [esp+18h+var_5], bl */
+							local1 = ebx;
 							ebx = (*(compressed + 3) & 0xFF);
 						}
 						goto loc_40FFCF;
@@ -308,6 +309,21 @@ void decompress(unsigned char *decompressed, unsigned char *compressed)
 							if (esi > 1)
 							{
 								/* 40FFDD */
+								edx = ((unsigned int)compressed) & 0xFF;
+								*decompressed = edx;
+								decompressed++;
+								if (esi > 2)
+								{
+									/* 40FFE9 */
+									edx = (local1 & 0xFF);
+									*decompressed = edx;
+									decompressed++;
+									goto loc_40FFF0;
+								}
+								else
+								{
+									goto loc_40FFF0;
+								}
 							}
 							else
 							{
@@ -320,7 +336,148 @@ void decompress(unsigned char *decompressed, unsigned char *compressed)
 				{
 					/* 40FFF0 */
 					loc_40FFF0:
-					;
+					edx = local0;
+					if (local0 != 0)
+					{
+						/* 410000 */
+						loc_410000:
+						edi = local0;
+						edx = *compressed;
+						edi--;
+						local0 = edi;
+						edi = edx;
+						edi &= 0x7;
+						compressed++;
+						edx <<= 3;
+						if (edi == 0)
+						{
+							/* 410019 */
+							edi = *compressed;
+							compressed++;
+							if (edi != 0)
+							{
+								/* 410025 */
+								edi += 7;
+								goto loc_410028;
+							}
+							else
+							{
+								/* 4100DE */
+								/* return something */
+								return 0;
+							}
+						}
+						else	
+						{
+							/* 410028 */
+							loc_410028:
+							if (edx >= 0x1E)
+							{
+								/* 41002D */
+								if (edx == 0)
+								{
+									/* 41002F */
+									edx = *compressed;
+									edx += 0x1E;
+								}
+								else
+								{
+									/* 410061 */
+									esi = *compressed;
+									edx += esi;
+									esi = *(compressed + 1);
+									compressed++;
+									esi >>= 8;
+									edx = (edx + esi + 0xFF);
+								}
+								/* 410075 */
+								compressed++;
+								goto loc_410076;
+							}
+							else
+							{
+								/* 410076 */
+								loc_410076:
+								esi = (unsigned int)decompressed;
+								esi -= edx;
+								esi--;
+								if (edi >= 4)
+								{
+									/* 410080 */
+									ebp = edi;
+									ebp <<= 2;
+									edx = ebp;
+									edx = ~edx;
+									edi = (edi + (edx * 4));
+									while (ebp > 0)
+									{
+										/* 410090 */
+										edx = (*(unsigned int*)&esi) & 0xFF;
+										*decompressed = edx;
+										edx = (*(unsigned int*)(&esi + 1)) & 0xFF;
+										decompressed++;
+										esi++;
+										*decompressed = edx;
+										edx = (*(unsigned int*)(&esi + 1)) & 0xFF;
+										decompressed++;
+										esi++;
+										*decompressed = edx;
+										decompressed++;
+										esi++;
+										ebp--;
+									}
+									goto loc_4100AE;
+								}
+								else
+								{
+									/* 4100AE */
+									loc_4100AE:
+									if ((signed int)edi > 0)
+									{
+										edx = (*(unsigned int*)&esi) & 0xFF;
+										*decompressed = edx;
+										decompressed++;
+										esi++;
+										if (edi > 1)
+										{
+											edx = (*(unsigned int*)&esi) & 0xFF;
+											*decompressed = edx;
+											decompressed++;
+											if (edi > 2)
+											{
+												edx = (*(unsigned int*)(&esi + 1)) & 0xFF;
+												*decompressed = edx;
+												decompressed++;
+												goto loc_4100CD;
+											}
+											else
+											{
+												goto loc_4100CD;
+											}
+										}
+										else
+										{
+											goto loc_4100CD;
+										}
+									}
+									else
+									{
+										/* 4100CD */
+										loc_4100CD:
+										edx = local0;
+										if (edx == 0)
+										{
+											goto loc_410000;
+										}
+									}
+								}
+							}
+						}
+					}
+					else
+					{
+						goto loc_40FF50;
+					}
 				}
 			}
 		}
