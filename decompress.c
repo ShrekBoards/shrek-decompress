@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
+unsigned int decompress(unsigned char *decompressed, unsigned char *compressed)
 {
 	uint32_t ebx, esi, edx, edi, ebp;
 	uint8_t local0, local1, bl, dl, *esi2;
