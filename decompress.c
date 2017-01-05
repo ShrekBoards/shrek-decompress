@@ -148,7 +148,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 			esi2 = decompressed_ptr;
 			esi2 -= edx;
 			esi2--;
-			if (esi >= 4)
+			if (edi >= 4)
 			{
 				/* 410080 */
 				ebp = edi >> 2;
@@ -174,17 +174,17 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 			{
 				/* 4100B2 */
 				dl = *esi2;
-				*(++decompressed_ptr) = dl;
+				*(decompressed_ptr++) = dl;
 				esi2++;
 				if ((int32_t)edi > 1)
 				{
 					/* 4100BD */
 					dl = *esi2;
-					*(++decompressed_ptr) = dl;
+					*(decompressed_ptr++) = dl;
 					if ((int32_t)edi > 2)
 					{
 						dl = *(esi2 + 1);
-						*(++decompressed_ptr) = dl;
+						*(decompressed_ptr++) = dl;
 					}
 				}
 			}
