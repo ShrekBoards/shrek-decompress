@@ -21,7 +21,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 		if (esi >= 0x1E)
 		{
 			/* 40FF68 */
-			if (esi > 0x1E)
+			if (esi == 0x1E)
 			{
 				/* 40FF6E */
 				esi = *compressed_ptr;
@@ -128,7 +128,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 			if (edx >= 0x1E)
 			{
 				/* 41002D */
-				if (edx > 0x1E)
+				if (edx == 0x1E)
 				{
 					/* 41002F */
 					edx = *compressed_ptr;
@@ -140,7 +140,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 					edx += esi;
 					esi = *(++compressed_ptr);
 					esi <<= 8;
-					edx = edx + esi + 0xFF;
+					edx = (int8_t)edx + (int8_t)esi + 0xFF;
 				}
 				compressed_ptr++;
 			}
@@ -152,7 +152,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 			{
 				/* 410080 */
 				ebp = edi >> 2;
-				edx = ~ebp;
+				edx = -ebp;
 				edi = edi + (edx * 4);
 				for (ebp; ebp > 0; ebp--)
 				{
