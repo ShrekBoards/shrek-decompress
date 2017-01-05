@@ -7,7 +7,7 @@
 unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 {
 	uint32_t ebx, esi, edx, edi, ebp;
-	uint8_t local0, local1, bl, dl, *esi2;
+	uint8_t local0, local1, bl, dl, temp, *esi2;
 	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
 
 	while (1)
@@ -37,7 +37,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 				esi += edx;
 				edx = *(++compressed_ptr);
 				edx <<= 8;
-				esi = (int8_t)esi + (int8_t)edx + 0xFF;
+				esi = esi + edx + 0xFF;
 				compressed_ptr++;
 				if (esi == 0x1011D)
 				{
@@ -54,7 +54,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 			loc_40FF79:
 			bl = *(compressed_ptr + 1);
 			dl = *compressed_ptr;
-			*compressed = bl;
+			temp = bl;
 			bl = *(compressed_ptr + 2);
 			local1 = bl;
 			bl = *(compressed_ptr + 3);
@@ -64,11 +64,11 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 				edi = esi;
 				edi >>= 2;
 				ebp = -edi;
-				esi = (int8_t)esi + ((int8_t)ebp * 4);
+				esi = esi + (ebp * 4);
 				for (edi; edi > 0; edi--)
 				{
 					*decompressed_ptr = dl;
-					dl = *compressed;
+					dl = temp;
 					*(decompressed_ptr + 1) = dl;
 					dl = local1;
 					compressed_ptr += 4;
@@ -76,7 +76,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 					*(decompressed_ptr + 3) = bl;
 					bl = *(compressed_ptr + 1);
 					dl = *compressed_ptr;
-					*compressed = bl;
+					temp = bl;
 					bl = *(compressed_ptr + 2);
 					decompressed_ptr += 4;
 					local1 = bl;
@@ -89,12 +89,12 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 				/* 40FFD3 */
 				compressed_ptr += esi;
 				*(decompressed_ptr++) = dl;
-				if (esi > 1)
+				if ((int32_t)esi > 1)
 				{
 					/* 40FFDD */
-					dl = *compressed;
+					dl = temp;
 					*(decompressed_ptr++) = dl;
-					if (esi > 2)
+					if ((int32_t)esi > 2)
 					{
 						/* 40FFE9 */
 						dl = local1;
@@ -142,7 +142,7 @@ unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 					edx += esi;
 					esi = *(++compressed_ptr);
 					esi <<= 8;
-					edx = (int8_t)edx + (int8_t)esi + 0xFF;
+					edx = edx + esi + 0xFF;
 				}
 				compressed_ptr++;
 			}
