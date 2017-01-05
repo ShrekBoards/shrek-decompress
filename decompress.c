@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned int decompress(unsigned char *decompressed, unsigned char *compressed)
+unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
 {
 	uint32_t ebx, esi, edx, edi, ebp;
 	uint8_t local0, local1, bl, dl, *esi2;
@@ -35,7 +35,7 @@ unsigned int decompress(unsigned char *decompressed, unsigned char *compressed)
 				esi += edx;
 				edx = *(++compressed_ptr);
 				edx <<= 8;
-				esi = esi + edx + 0xFF;
+				esi = (int8_t)esi + (int8_t)edx + 0xFF;
 				compressed_ptr++;
 				if (esi == 0x1011D)
 				{
@@ -61,21 +61,22 @@ unsigned int decompress(unsigned char *decompressed, unsigned char *compressed)
 				/* 40FF91 */
 				edi = esi;
 				edi >>= 2;
-				ebp = ~edi;
-				esi = esi + (ebp * 4);
+				ebp = -edi;
+				esi = (int8_t)esi + ((int8_t)ebp * 4);
 				for (edi; edi > 0; edi--)
 				{
 					*decompressed_ptr = dl;
 					dl = *compressed;
-					*(++decompressed_ptr) = dl;
+					*(decompressed_ptr + 1) = dl;
 					dl = local1;
 					compressed_ptr += 4;
-					*(++decompressed_ptr) = dl;
-					*(++decompressed_ptr) = bl;
+					*(decompressed_ptr + 2) = dl;
+					*(decompressed_ptr + 3) = bl;
 					bl = *(compressed_ptr + 1);
 					dl = *compressed_ptr;
 					*compressed = bl;
 					bl = *(compressed_ptr + 2);
+					decompressed_ptr += 4;
 					local1 = bl;
 					bl = *(compressed_ptr + 3);
 				}
