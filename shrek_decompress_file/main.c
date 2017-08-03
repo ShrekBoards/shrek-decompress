@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "shrek_decompress.h"
+#include "..\shrek_decompress.h"
 
 int main(int argc, char **argv)
 {
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	/* Decompress the file */
 	decompressed = (uint8_t*)malloc(5000000);
-	decompressed_size = decompress(decompressed, compressed);
+	decompressed_size = shrek_decompress(decompressed, compressed);
 
 	/* Write the decompressed output to a new file */
 	if ((fp = fopen("decompressed", "wb")) == 0)
