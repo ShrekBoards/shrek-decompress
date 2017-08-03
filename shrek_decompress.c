@@ -193,3 +193,7 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 	}
 }
 
+unsigned int shrek_compress(uint8_t *decompressed, uint8_t *compressed)
+{
+	return 0;
+}
