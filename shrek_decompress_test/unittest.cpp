@@ -15,17 +15,24 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace decompress_test
 {		
 	struct Test {
-		std::wstring	compressed;	// Path to the compressed file
 		std::wstring	decompressed;	// Path to the decompressed file
+		std::wstring	compressed;	// Path to the compressed file
 		unsigned int	size;		// Expected decompressed file size
 	};
 
 	TEST_CLASS(UnitTest)
 	{
 		private:
-			static const unsigned int TESTS = 1;
+			static const unsigned int TESTS = 7;
 			const struct Test tests[TESTS] = {
-				{ L"data\\colorbars.dds.compressed", L"data\\colorbars.dds", 0x20080 },
+				/* decompressed			compressed				size */
+				{ L"data\\colorbars.dds",	L"data\\colorbars.dds.compressed",	131200 },
+				{ L"data\\havok.xml",		L"data\\havok.xml.compressed",		137261 },
+				{ L"data\\level.db.bin",	L"data\\level.db.bin.compressed",	159616 },
+				{ L"data\\songs.bin",		L"data\\songs.bin.compressed",		442060 },
+				{ L"data\\track.bin",		L"data\\track.bin.compressed",		144124 },
+				{ L"data\\track.ltimesh",	L"data\\track.ltimesh.compressed",	1645256 },
+				{ L"data\\track.texpack",	L"data\\track.texpack.compressed",	1576960 },
 			};
 		public:
 			TEST_METHOD(DecompressTest)
