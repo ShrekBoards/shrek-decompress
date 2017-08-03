@@ -172,9 +172,8 @@
     <ClCompile Include="unittest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\decompress.vcxproj">
+    <ProjectReference Include="..\shrek_decompress.vcxproj">
       <Project>{794f84b5-a854-462d-b80f-d34c547aaa2d}</Project>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
