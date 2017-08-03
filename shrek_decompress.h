@@ -2,6 +2,6 @@
 #define SHREK_DECOMPRESS_H
 #include <stdint.h>
 
-unsigned int decompress(uint8_t *decompressed, uint8_t *compressed);
+__declspec(dllexport) unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed);
 
 #endif

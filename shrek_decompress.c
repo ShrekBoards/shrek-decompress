@@ -2,7 +2,7 @@
 
 #include "shrek_decompress.h"
 
-unsigned int decompress(uint8_t *decompressed, uint8_t *compressed)
+unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
 	uint32_t ebx, esi, edx, edi, ebp;
 	uint8_t local0, local1, bl, dl, temp, *esi2;
