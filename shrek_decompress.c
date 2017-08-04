@@ -10,20 +10,16 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 
 	while (1)
 	{
-		edx = *(compressed_ptr++);
-		length = (edx & 7) + 1;
-		distance = edx >> 3;
+		temp = *(compressed_ptr++);
+		length = (temp & 7) + 1;
+		distance = temp >> 3;
 
 		if (distance == 0x1E)
 			distance = *(compressed_ptr++) + 0x1E;
 		else if (distance > 0x1E)
 		{
-			/* 410037 */
-			edx = *compressed_ptr;
-			distance += edx;
-			edx = *(++compressed_ptr);
-			edx <<= 8;
-			distance = distance + edx + 0xFF;
+			distance += *compressed_ptr;
+			distance += (*(++compressed_ptr) << 8) + 0xFF;
 			compressed_ptr++;
 			if (distance == 0x1011D)
 				length--;
