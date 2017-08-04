@@ -18,32 +18,24 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 		esi >>= 3;
 		edx++;
 		local0 = edx;
-		if (esi >= 0x1E)
+		if (esi == 0x1E)
 		{
-			/* 40FF68 */
-			if (esi == 0x1E)
-			{
-				/* 40FF6E */
-				esi = *compressed_ptr;
-				esi += 0x1E;
-				compressed_ptr++;
-			}
-			else
-			{
-				/* 410037 */
-				edx = *compressed_ptr;
-				esi += edx;
-				edx = *(++compressed_ptr);
-				edx <<= 8;
-				esi = esi + edx + 0xFF;
-				compressed_ptr++;
-				if (esi == 0x1011D)
-				{
-					/* 410058 */
-					local0--;
-					goto loc_40FF79;
-				}
-			}
+			/* 40FF6E */
+			esi = *compressed_ptr;
+			esi += 0x1E;
+			compressed_ptr++;
+		}
+		else if (esi > 0x1E)
+		{
+			/* 410037 */
+			edx = *compressed_ptr;
+			esi += edx;
+			edx = *(++compressed_ptr);
+			edx <<= 8;
+			esi = esi + edx + 0xFF;
+			compressed_ptr++;
+			if (esi == 0x1011D)
+				local0--;
 		}
 		/* 40FF75 */
 		if (esi != 0)
@@ -125,25 +117,23 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				edi += 7;
 			}
 			/* 410028 */
-			if (edx >= 0x1E)
+			if (edx == 0x1E)
 			{
-				/* 41002D */
-				if (edx == 0x1E)
-				{
-					/* 41002F */
-					edx = *compressed_ptr;
-					edx += 0x1E;
-				}
-				else
-				{
-					esi = *compressed_ptr;
-					edx += esi;
-					esi = *(++compressed_ptr);
-					esi <<= 8;
-					edx = edx + esi + 0xFF;
-				}
+				/* 41002F */
+				edx = *compressed_ptr;
+				edx += 0x1E;
 				compressed_ptr++;
 			}
+			else if (edx > 0x1E)
+			{
+				esi = *compressed_ptr;
+				edx += esi;
+				esi = *(++compressed_ptr);
+				esi <<= 8;
+				edx = edx + esi + 0xFF;
+				compressed_ptr++;
+			}
+
 			/* 410076 */
 			esi2 = decompressed_ptr;
 			esi2 -= edx;
