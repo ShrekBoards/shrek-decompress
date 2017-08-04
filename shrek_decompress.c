@@ -4,41 +4,32 @@
 
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
-	uint32_t ebx, esi, edx, edi, ebp;
-	uint8_t local0, local1, bl, dl, temp, *esi2;
+	uint32_t ebx, esi, edx, edi, ebp, distance;
+	uint8_t length, local1, bl, dl, temp, *esi2;
 	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
 
 	while (1)
 	{
-		/* 40FF50 */
-		edx = *compressed_ptr;
-		esi = edx;
-		edx &= 7;
-		compressed_ptr++;
-		esi >>= 3;
-		edx++;
-		local0 = edx;
-		if (esi == 0x1E)
-		{
-			/* 40FF6E */
-			esi = *compressed_ptr;
-			esi += 0x1E;
-			compressed_ptr++;
-		}
-		else if (esi > 0x1E)
+		edx = *(compressed_ptr++);
+		length = (edx & 7) + 1;
+		distance = edx >> 3;
+
+		if (distance == 0x1E)
+			distance = *(compressed_ptr++) + 0x1E;
+		else if (distance > 0x1E)
 		{
 			/* 410037 */
 			edx = *compressed_ptr;
-			esi += edx;
+			distance += edx;
 			edx = *(++compressed_ptr);
 			edx <<= 8;
-			esi = esi + edx + 0xFF;
+			distance = distance + edx + 0xFF;
 			compressed_ptr++;
-			if (esi == 0x1011D)
-				local0--;
+			if (distance == 0x1011D)
+				length--;
 		}
 		/* 40FF75 */
-		if (esi != 0)
+		if (distance != 0)
 		{
 			/* 40FF79 */
 			loc_40FF79:
@@ -48,13 +39,13 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			bl = *(compressed_ptr + 2);
 			local1 = bl;
 			bl = *(compressed_ptr + 3);
-			if (esi >= 4)
+			if (distance >= 4)
 			{
 				/* 40FF91 */
-				edi = esi;
+				edi = distance;
 				edi >>= 2;
 				ebp = -edi;
-				esi = esi + (ebp * 4);
+				distance = distance + (ebp * 4);
 				for (edi; edi > 0; edi--)
 				{
 					*decompressed_ptr = dl;
@@ -74,17 +65,17 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				}
 			}
 			/* 40FFCF */
-			if ((int32_t)esi > 0)
+			if ((int32_t)distance > 0)
 			{
 				/* 40FFD3 */
-				compressed_ptr += esi;
+				compressed_ptr += distance;
 				*(decompressed_ptr++) = dl;
-				if ((int32_t)esi > 1)
+				if ((int32_t)distance > 1)
 				{
 					/* 40FFDD */
 					dl = temp;
 					*(decompressed_ptr++) = dl;
-					if ((int32_t)esi > 2)
+					if ((int32_t)distance > 2)
 					{
 						/* 40FFE9 */
 						dl = local1;
@@ -94,7 +85,7 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			}
 		}
 
-		for (local0; local0 > 0; local0--)
+		for (length; length > 0; length--)
 		{
 			edx = *compressed_ptr;
 			edi = edx & 7;
