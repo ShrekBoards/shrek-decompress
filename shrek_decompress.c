@@ -4,7 +4,7 @@
 
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
-	uint32_t esi, edx, edi, ebp, distance;
+	uint32_t esi, edx, edi, ebp, distance, i;
 	uint8_t length, dl, temp, *esi2;
 	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
 
@@ -33,7 +33,7 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			compressed_ptr += distance;
 		}
 
-		for (length; length > 0; length--)
+		for (i = length; i > 0; i--)
 		{
 			edx = *compressed_ptr;
 			edi = edx & 7;
