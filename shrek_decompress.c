@@ -93,10 +93,6 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				}
 			}
 		}
-		/* 40FFF0 */
-		edx = local0;
-		if (local0 == 0)
-			continue;
 
 		for (local0; local0 > 0; local0--)
 		{
