@@ -4,8 +4,8 @@
 
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
-	uint32_t ebx, esi, edx, edi, ebp, distance;
-	uint8_t length, local1, bl, dl, temp, *esi2;
+	uint32_t esi, edx, edi, ebp, distance;
+	uint8_t length, dl, temp, *esi2;
 	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
 
 	while (1)
@@ -24,61 +24,13 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			if (distance == 0x1011D)
 				length--;
 		}
-		/* 40FF75 */
+
+		/* Copies distance bytes from compressed to decompressed memory */
 		if (distance != 0)
 		{
-			/* 40FF79 */
-			loc_40FF79:
-			bl = *(compressed_ptr + 1);
-			dl = *compressed_ptr;
-			temp = bl;
-			bl = *(compressed_ptr + 2);
-			local1 = bl;
-			bl = *(compressed_ptr + 3);
-			if (distance >= 4)
-			{
-				/* 40FF91 */
-				edi = distance;
-				edi >>= 2;
-				ebp = -edi;
-				distance = distance + (ebp * 4);
-				for (edi; edi > 0; edi--)
-				{
-					*decompressed_ptr = dl;
-					dl = temp;
-					*(decompressed_ptr + 1) = dl;
-					dl = local1;
-					compressed_ptr += 4;
-					*(decompressed_ptr + 2) = dl;
-					*(decompressed_ptr + 3) = bl;
-					bl = *(compressed_ptr + 1);
-					dl = *compressed_ptr;
-					temp = bl;
-					bl = *(compressed_ptr + 2);
-					decompressed_ptr += 4;
-					local1 = bl;
-					bl = *(compressed_ptr + 3);
-				}
-			}
-			/* 40FFCF */
-			if ((int32_t)distance > 0)
-			{
-				/* 40FFD3 */
-				compressed_ptr += distance;
-				*(decompressed_ptr++) = dl;
-				if ((int32_t)distance > 1)
-				{
-					/* 40FFDD */
-					dl = temp;
-					*(decompressed_ptr++) = dl;
-					if ((int32_t)distance > 2)
-					{
-						/* 40FFE9 */
-						dl = local1;
-						*(decompressed_ptr++) = dl;
-					}
-				}
-			}
+			memcpy(decompressed_ptr, compressed_ptr, distance);
+			decompressed_ptr += distance;
+			compressed_ptr += distance;
 		}
 
 		for (length; length > 0; length--)
