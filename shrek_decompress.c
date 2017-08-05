@@ -4,8 +4,8 @@
 
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
-	uint32_t esi, edx, edi, ebp, distance, i;
-	uint8_t length, dl, temp, *esi2;
+	uint32_t esi, ebp, distance, length, i;
+	uint8_t dl, temp, *esi2;
 	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
 
 	while (1)
@@ -35,50 +35,50 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 
 		for (i = length; i > 0; i--)
 		{
-			edx = *compressed_ptr;
-			edi = edx & 7;
-			compressed_ptr++;
-			edx >>= 3; /* TODO: Should be SAR */
-			if (edi == 0)
+			temp = *(compressed_ptr++);
+			length = temp & 7;
+			distance = temp >> 3;
+
+			if (length == 0)
 			{
 				/* 410019 */
-				edi = *(compressed_ptr++);
-				if (edi == 0)
+				length = *(compressed_ptr++);
+				if (length == 0)
 				{
 					/* 4100DE */
 					return (uintptr_t)decompressed_ptr -
 						(uintptr_t)decompressed;
 				}
-				edi += 7;
+				length += 7;
 			}
 			/* 410028 */
-			if (edx == 0x1E)
+			if (distance == 0x1E)
 			{
 				/* 41002F */
-				edx = *compressed_ptr;
-				edx += 0x1E;
+				distance = *compressed_ptr;
+				distance += 0x1E;
 				compressed_ptr++;
 			}
-			else if (edx > 0x1E)
+			else if (distance > 0x1E)
 			{
 				esi = *compressed_ptr;
-				edx += esi;
+				distance += esi;
 				esi = *(++compressed_ptr);
 				esi <<= 8;
-				edx = edx + esi + 0xFF;
+				distance = distance + esi + 0xFF;
 				compressed_ptr++;
 			}
 
 			/* 410076 */
 			esi2 = decompressed_ptr;
-			esi2 -= edx;
+			esi2 -= distance;
 			esi2--;
-			if (edi >= 4)
+			if (length >= 4)
 			{
 				/* 410080 */
-				ebp = edi >> 2;
-				edx = -ebp;
-				edi = edi + (edx * 4);
+				ebp = length >> 2;
+				distance = -ebp;
+				length = length + (distance * 4);
 				for (ebp; ebp > 0; ebp--)
 				{
 					/* 410090 */
@@ -95,18 +95,18 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				}
 			}
 			/* 4100AE */
-			if ((int32_t)edi > 0)
+			if ((int32_t)length > 0)
 			{
 				/* 4100B2 */
 				dl = *esi2;
 				*(decompressed_ptr++) = dl;
 				esi2++;
-				if ((int32_t)edi > 1)
+				if ((int32_t)length > 1)
 				{
 					/* 4100BD */
 					dl = *esi2;
 					*(decompressed_ptr++) = dl;
-					if ((int32_t)edi > 2)
+					if ((int32_t)length > 2)
 					{
 						dl = *(esi2 + 1);
 						*(decompressed_ptr++) = dl;
