@@ -41,31 +41,21 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 
 			if (length == 0)
 			{
-				/* 410019 */
 				length = *(compressed_ptr++);
 				if (length == 0)
 				{
-					/* 4100DE */
 					return (uintptr_t)decompressed_ptr -
 						(uintptr_t)decompressed;
 				}
 				length += 7;
 			}
-			/* 410028 */
+
 			if (distance == 0x1E)
-			{
-				/* 41002F */
-				distance = *compressed_ptr;
-				distance += 0x1E;
-				compressed_ptr++;
-			}
+				distance = *(compressed_ptr++) + 0x1E;
 			else if (distance > 0x1E)
 			{
-				esi = *compressed_ptr;
-				distance += esi;
-				esi = *(++compressed_ptr);
-				esi <<= 8;
-				distance = distance + esi + 0xFF;
+				distance += *compressed_ptr;
+				distance += (*(++compressed_ptr) << 8) + 0xFF;
 				compressed_ptr++;
 			}
 
