@@ -4,9 +4,9 @@
 
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
-	uint32_t esi, ebp, distance, length, i;
-	uint8_t dl, temp, *esi2;
-	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
+	uint32_t distance, length, i, j;
+	uint8_t temp, *compressed_ptr = compressed,
+		*decompressed_ptr = decompressed, *backwards_ptr = NULL;
 
 	while (1)
 	{
@@ -25,7 +25,7 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				length--;
 		}
 
-		/* Copies distance bytes from compressed to decompressed memory */
+		/* Copies 'distance bytes' from compressed to decompressed memory */
 		if (distance != 0)
 		{
 			memcpy(decompressed_ptr, compressed_ptr, distance);
@@ -59,51 +59,14 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 				compressed_ptr++;
 			}
 
-			/* 410076 */
-			esi2 = decompressed_ptr;
-			esi2 -= distance;
-			esi2--;
-			if (length >= 4)
-			{
-				/* 410080 */
-				ebp = length >> 2;
-				distance = -ebp;
-				length = length + (distance * 4);
-				for (ebp; ebp > 0; ebp--)
-				{
-					/* 410090 */
-					dl = *esi2;
-					*decompressed_ptr = dl;
-					dl = *(++esi2);
-					*(++decompressed_ptr) = dl;
-					dl = *(++esi2);
-					*(++decompressed_ptr) = dl;
-					dl = *(++esi2);
-					*(++decompressed_ptr) = dl;
-					decompressed_ptr++;
-					esi2++;
-				}
-			}
-			/* 4100AE */
-			if ((int32_t)length > 0)
-			{
-				/* 4100B2 */
-				dl = *esi2;
-				*(decompressed_ptr++) = dl;
-				esi2++;
-				if ((int32_t)length > 1)
-				{
-					/* 4100BD */
-					dl = *esi2;
-					*(decompressed_ptr++) = dl;
-					if ((int32_t)length > 2)
-					{
-						dl = *(esi2 + 1);
-						*(decompressed_ptr++) = dl;
-					}
-				}
-			}
-			/* 4100CD */
+			/*
+			 * Each of the next 'length' characters is equal to the
+			 * characters exactly 'distance' characters behind it in
+			 * the uncompressed stream
+			 */
+			backwards_ptr = decompressed_ptr - distance - 1;
+			for (j = length; j > 0; j--)
+				*(decompressed_ptr++) = *(backwards_ptr++);
 		}
 	}
 }
