@@ -88,9 +88,6 @@ namespace decompress_test
 				}
 			}
 
-			BEGIN_TEST_METHOD_ATTRIBUTE(CompressTest)
-				TEST_IGNORE()
-			END_TEST_METHOD_ATTRIBUTE()
 			TEST_METHOD(CompressTest)
 			{
 				uint8_t *compressed, *decompressed, *decompressed_real;
@@ -116,7 +113,10 @@ namespace decompress_test
 
 					// Compress the data
 					compressed = new uint8_t[5000000];
-					shrek_compress(compressed, decompressed_real);
+					Assert::IsTrue(
+						shrek_compress(compressed, 5000000, decompressed_real, size) > tests[i].decomp_size,
+						L"Fake compressed size is less than real file"
+					);
 
 					// Decompress this newly compressed data, and check it matches the original
 					decompressed = new uint8_t[tests[i].decomp_size];

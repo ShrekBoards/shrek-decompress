@@ -2,6 +2,8 @@
 
 #include "shrek_decompress.h"
 
+#define MAX_DISTANCE 0x1011D
+
 unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 {
 	uint32_t distance, length, i, j;
@@ -21,7 +23,7 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			distance += *compressed_ptr;
 			distance += (*(++compressed_ptr) << 8) + 0xFF;
 			compressed_ptr++;
-			if (distance == 0x1011D)
+			if (distance == MAX_DISTANCE)
 				length--;
 		}
 
@@ -71,7 +73,69 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 	}
 }
 
-unsigned int shrek_compress(uint8_t *decompressed, uint8_t *compressed)
+unsigned int shrek_compress(uint8_t *compressed, size_t comp_size, uint8_t *decompressed, size_t decomp_size)
 {
-	return 0;
+	/*
+	 * Adapated from code provided by zed0
+	 * <https://reverseengineering.stackexchange.com/questions/16021/>
+	 */
+	uint16_t header;
+	uint8_t *compressed_ptr = compressed, *decompressed_ptr = decompressed;
+	size_t bytes_written = 0, remaining;
+
+	/* Repeat as many max-length blocks as we can */
+	while ((decomp_size - bytes_written) > MAX_DISTANCE)
+	{
+		if ((bytes_written + 3 + MAX_DISTANCE) > comp_size)
+			return 0;
+		*(compressed_ptr++) = 0xF8;
+		*(compressed_ptr++) = 0xFF;
+		*(compressed_ptr++) = 0xFF;
+		memcpy(compressed_ptr, decompressed_ptr, MAX_DISTANCE);
+		compressed_ptr += MAX_DISTANCE;
+		decompressed_ptr += MAX_DISTANCE;
+		bytes_written += 3 + MAX_DISTANCE;
+	}
+
+	/* Add a final block with the remaining data */
+	remaining = (decomp_size - (size_t)(decompressed_ptr - decompressed));
+	if (remaining > 0x11D)
+	{
+		if ((bytes_written + remaining + 3) > comp_size)
+			return 0;
+		*(compressed_ptr++) = 0xF8;
+		header = (uint16_t)(remaining - 0x11E);
+		*(compressed_ptr++) = (uint8_t)(header & 0xFF);
+		*(compressed_ptr++) = (uint8_t)(header >> 8);
+		memcpy(compressed_ptr, decompressed_ptr, remaining);
+		compressed_ptr += remaining;
+		bytes_written += remaining + 3;
+	}
+	else if (remaining > 0x1D)
+	{
+		if ((bytes_written + remaining + 2) > comp_size)
+			return 0;
+		*(compressed_ptr++) = 0xF0;
+		*(compressed_ptr++) = (uint8_t)(remaining - 0x1E);
+		memcpy(compressed_ptr, decompressed_ptr, remaining);
+		compressed_ptr += remaining;
+		bytes_written += remaining + 2;
+	}
+	else
+	{
+		if ((bytes_written + remaining + 1) > comp_size)
+			return 0;
+		memcpy(compressed_ptr, decompressed_ptr, remaining);
+		compressed_ptr += remaining;
+		bytes_written += remaining + 1;
+	}
+
+	/* Add a special case 0 length back reference to end the stream */
+	if ((bytes_written + 2) > comp_size)
+		return 0;
+	*(compressed_ptr++) = 0x00;
+	*(compressed_ptr++) = 0x00;
+	bytes_written += 2;
+
+	return bytes_written;
 }
