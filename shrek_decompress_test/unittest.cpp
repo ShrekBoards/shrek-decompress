@@ -93,53 +93,40 @@ namespace decompress_test
 			END_TEST_METHOD_ATTRIBUTE()
 			TEST_METHOD(CompressTest)
 			{
-				uint8_t *compressed, *compressed_real, *decompressed;
+				uint8_t *compressed, *decompressed, *decompressed_real;
 
 				for (unsigned int i = 0; i < TESTS; i++)
 				{
-					// Open compressed file
-					std::ifstream file(tests[i].compressed, std::ios::binary | std::ios::ate);
-					if (!file)
-					{
-						std::wstring err = L"Failed to open compressed file '" + tests[i].compressed + L"'";
-						Assert::Fail(err.c_str());
-					}
-					std::streamsize size = file.tellg();
-					file.seekg(std::ios::beg);
-					compressed_real = new uint8_t[size];
-					if (!file.read((char*)compressed_real, size))
-					{
-						std::wstring err = L"Failed to open compressed file '" + tests[i].compressed + L"'";
-						Assert::Fail(err.c_str());
-					}
-					file.close();
-
 					// Open decompressed file
-					file.open(tests[i].decompressed, std::ios::binary | std::ios::ate);
+					std::ifstream file(tests[i].decompressed, std::ios::binary | std::ios::ate);
 					if (!file)
 					{
-						std::wstring err = L"Failed to open compressed file '" + tests[i].compressed + L"'";
+						std::wstring err = L"Failed to open decompressed file '" + tests[i].decompressed + L"'";
 						Assert::Fail(err.c_str());
 					}
-					size = file.tellg();
+					std::streampos size = file.tellg();
 					file.seekg(std::ios::beg);
-					decompressed = new uint8_t[size];
-					if (!file.read((char*)decompressed, size))
+					decompressed_real = new uint8_t[size];
+					if (!file.read((char*)decompressed_real, size))
 					{
-						std::wstring err = L"Failed to open decompressed file '" + tests[i].compressed + L"'";
+						std::wstring err = L"Failed to open decompressed file '" + tests[i].decompressed + L"'";
 						Assert::Fail(err.c_str());
 					}
 					file.close();
 
 					// Compress the data
-					decompressed = new uint8_t[5000000];
-					Assert::AreEqual(tests[i].comp_size, shrek_compress(compressed, decompressed), L"Compressed sizes differ");
-					for (unsigned int j = 0; j < tests[i].comp_size; j++)
-						Assert::AreEqual(compressed[j], compressed_real[j], L"Compressed files differ");
+					compressed = new uint8_t[5000000];
+					shrek_compress(compressed, decompressed_real);
+
+					// Decompress this newly compressed data, and check it matches the original
+					decompressed = new uint8_t[tests[i].decomp_size];
+					shrek_decompress(decompressed, compressed);
+					for (unsigned int j = 0; j < tests[i].decomp_size; j++)
+						Assert::AreEqual(decompressed[j], decompressed_real[j], L"Decompressed files differ");
 
 					delete[] compressed;
 					delete[] decompressed;
-					delete[] compressed_real;
+					delete[] decompressed_real;
 				}
 			}
 	};
