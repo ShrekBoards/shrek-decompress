@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	/* Decompress the file */
 	decompressed = (uint8_t*)malloc(5000000);
-	decompressed_size = shrek_decompress(decompressed, compressed);
+	decompressed_size = shrek_decompress(decompressed, 5000000, compressed, compressed_size);
 
 	/* Write the decompressed output to a new file */
 	if ((fp = fopen("decompressed", "wb")) == 0)

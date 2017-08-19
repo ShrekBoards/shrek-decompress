@@ -78,7 +78,11 @@ namespace decompress_test
 
 					// Decompress the data
 					decompressed = new uint8_t[5000000];
-					Assert::AreEqual(tests[i].decomp_size, shrek_decompress(decompressed, compressed), L"Decompressed sizes differ");
+					Assert::AreEqual(
+						tests[i].decomp_size,
+						shrek_decompress(decompressed, 5000000, compressed, tests[i].comp_size),
+						L"Decompressed sizes differ"
+					);
 					for (unsigned int j = 0; j < tests[i].decomp_size; j++)
 						Assert::AreEqual(decompressed[j], decompressed_real[j], L"Decompressed files differ");
 
@@ -91,6 +95,7 @@ namespace decompress_test
 			TEST_METHOD(CompressTest)
 			{
 				uint8_t *compressed, *decompressed, *decompressed_real;
+				unsigned int comp_size;
 
 				for (unsigned int i = 0; i < TESTS; i++)
 				{
@@ -113,14 +118,15 @@ namespace decompress_test
 
 					// Compress the data
 					compressed = new uint8_t[5000000];
+					comp_size = shrek_compress(compressed, 5000000, decompressed_real, size);
 					Assert::IsTrue(
-						shrek_compress(compressed, 5000000, decompressed_real, size) > tests[i].decomp_size,
+						comp_size > tests[i].decomp_size,
 						L"Fake compressed size is less than real file"
 					);
 
 					// Decompress this newly compressed data, and check it matches the original
 					decompressed = new uint8_t[tests[i].decomp_size];
-					shrek_decompress(decompressed, compressed);
+					shrek_decompress(decompressed, tests[i].decomp_size, compressed, comp_size);
 					for (unsigned int j = 0; j < tests[i].decomp_size; j++)
 						Assert::AreEqual(decompressed[j], decompressed_real[j], L"Decompressed files differ");
 

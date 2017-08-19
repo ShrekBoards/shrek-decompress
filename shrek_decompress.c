@@ -4,11 +4,12 @@
 
 #define MAX_DISTANCE 0x1011D
 
-unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
+unsigned int shrek_decompress(uint8_t *decompressed, size_t decomp_size, uint8_t *compressed, size_t comp_size)
 {
 	uint32_t distance, length, i, j;
 	uint8_t temp, *compressed_ptr = compressed,
 		*decompressed_ptr = decompressed, *backwards_ptr = NULL;
+	size_t bytes_written = 0;
 
 	while (1)
 	{
@@ -30,9 +31,12 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 		/* Copies 'distance bytes' from compressed to decompressed memory */
 		if (distance != 0)
 		{
+			if ((bytes_written + distance) > decomp_size)
+				return 0;
 			memcpy(decompressed_ptr, compressed_ptr, distance);
 			decompressed_ptr += distance;
 			compressed_ptr += distance;
+			bytes_written += distance;
 		}
 
 		for (i = length; i > 0; i--)
@@ -66,9 +70,12 @@ unsigned int shrek_decompress(uint8_t *decompressed, uint8_t *compressed)
 			 * characters exactly 'distance' characters behind it in
 			 * the uncompressed stream
 			 */
+			if ((bytes_written + length) > decomp_size)
+				return 0;
 			backwards_ptr = decompressed_ptr - distance - 1;
 			for (j = length; j > 0; j--)
 				*(decompressed_ptr++) = *(backwards_ptr++);
+			bytes_written += length;
 		}
 	}
 }
