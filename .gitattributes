@@ -1,0 +1,20 @@
+# Default
+* text=auto
+
+# Sources
+*.c text
+*.h text
+
+# Compiled Object / Library Files
+*.o binary
+*.so binary
+
+# Precompiled Headers
+*.pch binary
+
+# Executables
+*.exe binary
+
+# Visual Studio Files
+*.sln text merge=union eol=crlf
+*.csproj text merge=union eol=crlf

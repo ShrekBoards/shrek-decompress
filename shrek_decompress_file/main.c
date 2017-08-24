@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "..\shrek_decompress.h"
+#include "../shrek_decompress.h"
 
 int main(int argc, char **argv)
 {
