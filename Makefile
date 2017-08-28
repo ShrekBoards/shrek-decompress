@@ -3,8 +3,10 @@ CFLAGS=-Wall -Werror -pedantic
 BINDIR=bin
 INCDIR=include
 LIBDIR=lib
+DISDIR=dist
 BIN=shrek_decompress_file
 LIB=libshrek_decompress.a
+DIS=libshrek_decompress.tar.gz
 
 all: $(BIN) $(LIB)
 
@@ -24,9 +26,18 @@ clean:
 	rm -f $(LIBDIR)/$(LIB)
 	rm -f $(INCDIR)/shrek_decompress.h
 	rm -f $(BINDIR)/$(BIN)
+	rm -f $(DISDIR)/$(DIS)
 	rmdir $(LIBDIR)
 	rmdir $(INCDIR)
 	rmdir $(BINDIR)
+	rmdir $(DISDIR)
+
+dist: $(BIN) $(LIB)
+	mkdir -p libshrek_decompress
+	cp -r $(INCDIR) $(LIBDIR) $(BINDIR) libshrek_decompress
+	mkdir -p $(DISDIR)
+	tar -czf $(DISDIR)/$(DIS) libshrek_decompress
+	rm -r libshrek_decompress
 
 install:
 	mkdir -p /usr/local/lib
