@@ -4,20 +4,20 @@ BINDIR=bin
 INCDIR=include
 LIBDIR=lib
 BIN=shrek_decompress_file
-LIB=libshrek_decompress.so
+LIB=libshrek_decompress.a
 
 all: $(BIN) $(LIB)
 
 $(LIB): shrek_decompress.h shrek_decompress.c
 	mkdir -p $(LIBDIR)
 	mkdir -p $(INCDIR)
-	$(CC) $(CFLAGS) -c -fpic shrek_decompress.c
-	$(CC) -shared shrek_decompress.o -o $(LIBDIR)/$(LIB)
+	$(CC) $(CFLAGS) -c shrek_decompress.c
+	ar -cvq $(LIBDIR)/$(LIB) shrek_decompress.o -o $(LIBDIR)/$(LIB)
 	cp shrek_decompress.h $(INCDIR)
 
 $(BIN): $(LIB) shrek_decompress_file/main.c
 	mkdir -p $(BINDIR)
-	$(CC) $(CFLAGS) -L$(LIBDIR) -lshrek_decompress shrek_decompress_file/main.c -o $(BINDIR)/$(BIN)
+	$(CC) $(CFLAGS) shrek_decompress_file/main.c -L$(LIBDIR) -lshrek_decompress -o $(BINDIR)/$(BIN)
 
 clean:
 	rm -f shrek_decompress.o
