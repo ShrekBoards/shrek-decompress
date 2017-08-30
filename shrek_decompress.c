@@ -134,6 +134,7 @@ unsigned int shrek_compress(uint8_t *compressed, size_t comp_size, uint8_t *deco
 	{
 		if ((bytes_written + remaining + 1) > comp_size)
 			return 0;
+		*(compressed_ptr++) = (uint8_t)(remaining << 3);
 		memcpy(compressed_ptr, decompressed_ptr, remaining);
 		compressed_ptr += remaining;
 		bytes_written += remaining + 1;
