@@ -5,10 +5,7 @@
 #include <fstream>
 #include <string>
 
-extern "C"
-{
 #include "..\shrek_decompress.h"
-}
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
