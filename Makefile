@@ -38,13 +38,3 @@ dist: $(BIN) $(LIB)
 	mkdir -p $(DISDIR)
 	tar -czf $(DISDIR)/$(DIS) libshrek_decompress
 	rm -r libshrek_decompress
-
-install:
-	mkdir -p /usr/local/lib
-	mkdir -p /usr/local/include
-	cp -r $(LIBDIR)/$(LIB) /usr/local/lib/
-	cp -r $(INCDIR)/shrek_decompress.h /usr/local/include/
-
-uninstall:
-	rm -f /usr/local/lib/$(LIB)
-	rm -f /usr/local/include/shrek_decompress.h
